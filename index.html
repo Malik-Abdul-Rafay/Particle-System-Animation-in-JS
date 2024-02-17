@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Particle System Animation | Rafay Malik</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background-color: #111;
+    }
+
+    canvas {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<script>
+  const canvas = document.getElementById('particleCanvas');
+  const ctx = canvas.getContext('2d');
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = [];
+
+  class Particle {
+    constructor(x, y, size, color, speedX, speedY) {
+      this.x = x;
+      this.y = y;
+      this.size = size;
+      this.color = color;
+      this.speedX = speedX;
+      this.speedY = speedY;
+    }
+
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+
+      if (this.size > 0.2) this.size -= 0.1;
+    }
+
+    draw() {
+      ctx.fillStyle = this.color;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  function createParticle(x, y) {
+    const size = Math.random() * 10 + 5;
+    const color = `rgba(${Math.random() * 255},${Math.random() * 255},${Math.random() * 255},0.8)`;
+    const speedX = Math.random() * 4 - 2;
+    const speedY = Math.random() * 4 - 2;
+
+    particles.push(new Particle(x, y, size, color, speedX, speedY));
+  }
+
+  function animateParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < particles.length; i++) {
+      particles[i].update();
+      particles[i].draw();
+
+      if (particles[i].size <= 0.2) {
+        particles.splice(i, 1);
+        i--;
+      }
+    }
+
+    requestAnimationFrame(animateParticles);
+  }
+
+  window.addEventListener('resize', () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    createParticle(e.x, e.y);
+  });
+
+  animateParticles();
+</script>
+
+</body>
+</html>
